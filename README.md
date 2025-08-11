@@ -40,6 +40,6 @@ Create .env in backend/:
 <pre lang="bash"> ELASTICSEARCH_HOST=http://localhost:9200 </pre>
 
 ## 4️⃣ Frontend Setup
-<pre lang="bash"> cd frontend  npm run dev </pre>
+<pre lang="bash"> cd frontend </pre>
 <pre lang="bash"> npm install</pre>
 <pre lang="bash"> npm run dev </pre>
