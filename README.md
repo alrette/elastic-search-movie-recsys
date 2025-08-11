@@ -31,10 +31,15 @@ This starts:
 - Elasticsearch (for search & recommendations)
 
 ## 3️⃣ Backend Setup
-<pre lang="bash"> cd backend pip install -r requirements.txt uvicorn app.main:app --reload </pre>
+<pre lang="bash"> cd backend</pre>
+<pre lang="bash"> pip install -r requirements.txt</pre>
+<pre lang="bash"> uvicorn app.main:app --reloa </pre>
 Create .env in backend/:
 
-<pre lang="bash"> TMDB_API_KEY=your_tmdb_api_key ELASTICSEARCH_HOST=http://localhost:9200 </pre>
+<pre lang="bash"> TMDB_API_KEY=your_tmdb_api_key</pre>
+<pre lang="bash"> ELASTICSEARCH_HOST=http://localhost:9200 </pre>
 
 ## 4️⃣ Frontend Setup
-<pre lang="bash"> cd frontend npm install npm run dev </pre>
+<pre lang="bash"> cd frontend  npm run dev </pre>
+<pre lang="bash"> npm install</pre>
+<pre lang="bash"> npm run dev </pre>
