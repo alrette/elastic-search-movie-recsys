@@ -19,7 +19,8 @@ Search movies by title, overview, or cast/director, view details, and get AI-pow
 
 # ⚙️ Installation & Setup
 ## 1️⃣ Clone the Repository
-<pre lang="bash"> git clone https://github.com/&lt;alrette&gt;/elastic-search-movie-recsys.git <br> cd elastic-search-movie-recsys </pre>
+<pre lang="bash"> git clone https://github.com/alrette/elastic-search-movie-recsys</pre>
+<pre lang="bash"> cd elastic-search-movie-recsys</pre>
 
 ## 2️⃣ Start Elasticsearch via Docker Compose
 Run from the project root:
