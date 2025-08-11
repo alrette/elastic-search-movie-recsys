@@ -10,15 +10,16 @@ from elastic_transport import ApiError
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 import numpy as np
-# from elasticsearch.exceptions import ApiError
 import torch
+
 print(torch.cuda.is_available(), torch.cuda.get_device_name(0))
 
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
-# Add this line for debugging
 
+# debugging
 print(f"TMDB API Key Loaded: {os.getenv('TMDB_API_KEY')}")
 
 router = APIRouter()
@@ -30,7 +31,19 @@ INDEX_NAME = "movies"
 
 ELASTIC_SEARCH_URL = os.getenv("ELASTIC_URL", "http://localhost:9200")
 
-mxbai_model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1")
+mxbai_model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", device=DEVICE)
+
+def encode_query(text: str):
+    prompt = f"Represent this sentence for searching relevant passages: {text}"
+    with torch.inference_mode():
+        emb = mxbai_model.encode(
+            prompt,
+            batch_size=1,               
+            normalize_embeddings=True,
+            convert_to_numpy=True,
+            device=DEVICE               
+        )
+    return emb.tolist()
 
 # To connect + retry
 elastic_search_client : Elasticsearch | None = None
@@ -64,7 +77,6 @@ def ensure_es() -> Elasticsearch:
     
     return elastic_search_client
 
-
 # Validate movie id to prevent movie that is not in dataset
 def movie_id_validation(val: Any) -> int | None:
     if val is None:
@@ -72,7 +84,6 @@ def movie_id_validation(val: Any) -> int | None:
     s = str(val).strip()
     
     return int(s) if s.isdigit() else None
-
 
 # enrich movies information with TMDB API
 async def fetch_from_tmdb(movies:List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -100,8 +111,7 @@ async def fetch_from_tmdb(movies:List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 async def search_movies_info(q:str, from_:int = Query(0, ge=0), size:int = Query(20, ge = 1, le = 50)):
     es = ensure_es()
     
-    query_text = f"Represent this sentence for searching relevant passages: {q}"
-    query_emb = mxbai_model.encode(query_text, normalize_embeddings=True).tolist()
+    query_emb = encode_query(q)
     
     query ={
         "multi_match":{
@@ -112,7 +122,6 @@ async def search_movies_info(q:str, from_:int = Query(0, ge=0), size:int = Query
     }
     
     try:
-        
         response = es.search(
             index = INDEX_NAME,
             knn = {
@@ -128,7 +137,6 @@ async def search_movies_info(q:str, from_:int = Query(0, ge=0), size:int = Query
         
         hits = (response.get("hits") or {}).get("hits") or []
         results = [(h.get("_source") or {}) for h in hits]
-        
         
         if not results:
             return {"results" : []}
