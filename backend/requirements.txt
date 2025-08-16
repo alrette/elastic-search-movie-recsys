@@ -1,0 +1,9 @@
+fastapi==0.116.1
+uvicorn==0.35.0
+python-dotenv==1.1.0
+httpx==0.28.1
+elasticsearch==8.14.0
+elastic-transport==8.17.1
+sentence-transformers==5.0.0
+torch==2.7.1+cu128
+numpy==1.26.4
